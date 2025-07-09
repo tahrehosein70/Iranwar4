@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جنگ منطقه‌ای ایران</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#764ba2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="جنگ ایران">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icon-192.png') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>جنگ منطقه‌ای ایران</h1>
+            <p>بازی استراتژیک چندنفره</p>
+        </header>
+        
+        <div id="main-menu" class="screen active">
+            <div class="menu-card">
+                <h2>منوی اصلی</h2>
+                <div class="input-group">
+                    <label for="player-name">نام بازیکن:</label>
+                    <input type="text" id="player-name" placeholder="نام خود را وارد کنید">
+                </div>
+                <div class="button-group">
+                    <button id="create-game-btn" class="btn btn-primary">ساخت بازی جدید</button>
+                    <button id="join-game-btn" class="btn btn-secondary">پیوستن به بازی</button>
+                </div>
+                <div id="join-game-form" class="input-group hidden">
+                    <label for="game-id">شناسه بازی:</label>
+                    <input type="text" id="game-id" placeholder="شناسه بازی را وارد کنید">
+                    <button id="join-confirm-btn" class="btn btn-success">تایید</button>
+                </div>
+            </div>
+            <div class="info-panel">
+                <h3>راهنمای بازی</h3>
+                <ul>
+                    <li>بازی برای 2 تا 8 نفر</li>
+                    <li>هر بازیکن قلمروهایی از ایران دارد</li>
+                    <li>با سکه سرباز و ساختمان بسازید</li>
+                    <li>به مناطق همسایه حمله کنید</li>
+                    <li>هر 10 دقیقه سربازها کم می‌شوند</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div id="waiting-room" class="screen">
+            <div class="waiting-card">
+                <h2>اتاق انتظار</h2>
+                <p id="game-id-display"></p>
+                <div id="players-list">
+                    <h3>بازیکنان:</h3>
+                    <ul id="players-ul"></ul>
+                </div>
+                <button id="start-game-btn" class="btn btn-primary hidden">شروع بازی</button>
+                <button id="leave-game-btn" class="btn btn-danger">خروج از بازی</button>
+            </div>
+        </div>
+        
+        <div id="game-screen" class="screen">
+            <div class="game-header">
+                <div id="player-info">
+                    <span id="player-coins">سکه: 0</span>
+                    <span id="player-soldiers">سرباز: 0</span>
+                    <span id="player-companies">شرکت: 0</span>
+                </div>
+                <div id="game-actions">
+                    <button id="attack-btn" class="btn btn-danger">حمله</button>
+                    <button id="build-btn" class="btn btn-primary">ساخت</button>
+                    <button id="end-turn-btn" class="btn btn-success">پایان نوبت</button>
+                </div>
+            </div>
+            
+            <div class="game-content">
+                <div id="map-container">
+                    <svg id="iran-map" width="800" height="600">
+                        <!-- Map will be generated dynamically -->
+                    </svg>
+                </div>
+                
+                <div class="side-panel">
+                    <div id="region-info">
+                        <h3>اطلاعات منطقه</h3>
+                        <div id="region-details">
+                            <p>منطقه‌ای را انتخاب کنید</p>
+                        </div>
+                    </div>
+                    
+                    <div id="action-panel">
+                        <div id="attack-panel" class="action-section hidden">
+                            <h4>حمله</h4>
+                            <div class="input-group">
+                                <label for="attack-soldiers">تعداد سرباز:</label>
+                                <input type="number" id="attack-soldiers" min="1" max="100" value="1">
+                            </div>
+                            <button id="confirm-attack-btn" class="btn btn-danger">تایید حمله</button>
+                        </div>
+                        
+                        <div id="build-panel" class="action-section hidden">
+                            <h4>ساخت</h4>
+                            <div class="build-options">
+                                <button class="build-option" data-building="barracks">
+                                    <span>پادگان</span>
+                                    <small>200 سکه</small>
+                                </button>
+                                <button class="build-option" data-building="factory">
+                                    <span>کارخانه</span>
+                                    <small>500 سکه</small>
+                                </button>
+                                <button class="build-option" data-building="bank">
+                                    <span>بانک</span>
+                                    <small>300 سکه</small>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="messages-panel">
+                        <h4>پیام‌ها</h4>
+                        <div id="messages-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="game-over" class="screen">
+            <div class="game-over-card">
+                <h2>پایان بازی</h2>
+                <div id="winner-announcement"></div>
+                <div id="final-stats"></div>
+                <button id="new-game-btn" class="btn btn-primary">بازی جدید</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="notification" class="notification hidden">
+        <span id="notification-text"></span>
+        <button id="notification-close">&times;</button>
+    </div>
+    
+    <script>
+        // Register service worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/static/sw.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
+    <script src="{{ url_for('static', filename='simple_game.js') }}"></script>
+</body>
+</html>
